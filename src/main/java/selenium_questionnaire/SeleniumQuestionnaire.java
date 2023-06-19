@@ -62,9 +62,10 @@ public class SeleniumQuestionnaire {
         driver.get(API_BASE_URL + "/pages/questionnaire/index.html");
         // 等待页面加载完成，最长等待时间为 5 秒
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-        WebElement btn_createQuestionnaire = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("#content > div > div.list-header > div:nth-child(2) > button:nth-child(1)")));
-        btn_createQuestionnaire.click();
-//        driver.findElement((By.cssSelector("#content > div > div.list-header > div:nth-child(2) > button:nth-child(1)"))).click();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.className("list-header")));
+//        WebElement btn_createQuestionnaire = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("#content > div > div.list-header > div:nth-child(2) > button:nth-child(1)")));
+//        btn_createQuestionnaire.click();
+        driver.findElement((By.cssSelector("#content > div > div.list-header > div:nth-child(2) > button:nth-child(1)"))).click();
         driver.findElement(By.cssSelector("#option_project_name")).click();
         driver.findElement(By.cssSelector("#selectLeo2 > option:nth-child(2)")).click();
         return true;
