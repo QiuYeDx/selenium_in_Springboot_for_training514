@@ -55,6 +55,9 @@ public class SeleniumQuestionnaire {
     public boolean testLogin(WebDriver driver){
         // 与将要爬取的网站建立连接
         driver.get(API_BASE_URL + "/pages/login/index.html");
+        // 等待页面加载完成，最长等待时间为 5 秒
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("username")));
         // 在username输入框中输入测试用户名
         driver.findElement(By.id("username")).sendKeys("Selenium");
         // 在password输入框中输入测试密码
