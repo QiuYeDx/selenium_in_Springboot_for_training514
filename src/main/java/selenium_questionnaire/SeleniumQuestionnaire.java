@@ -105,7 +105,9 @@ public class SeleniumQuestionnaire {
         // 点击"立即创建"按钮
         driver.findElement(By.cssSelector("body > div.container > form > div:nth-child(4) > div > button")).click();
 
-        // 等待警告框出现
+        // 等待，确保警告框出现
+        wait.until(ExpectedConditions.alertIsPresent());
+        // 获取警告框对象
         Alert alert = driver.switchTo().alert();
         // 获取警告框的文本内容
         String alertText = alert.getText();
@@ -233,7 +235,9 @@ public class SeleniumQuestionnaire {
         // 点击"完成编辑"，保存本问卷
         driver.findElement(By.cssSelector("body > div.header > button.btn-success")).click();
 
-        // 等待警告框出现
+        // 等待，确保警告框出现
+        wait.until(ExpectedConditions.alertIsPresent());
+        // 获取警告框对象
         Alert alert = driver.switchTo().alert();
         // 获取警告框的文本内容
         String alertText = alert.getText();
