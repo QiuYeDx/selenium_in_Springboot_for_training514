@@ -1,23 +1,20 @@
 package selenium_questionnaire;
 
-import org.openqa.selenium.Alert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
 
 import java.time.Duration;
-import java.util.Date;
-
+import java.util.*;
+//@PropertySource("classpath:application.properties")
 public class SeleniumQuestionnaire {
-    String API_BASE_URL = "http://127.0.0.1:8085";
-
-    public void setAPI_BASE_URL(String API_BASE_URL) {
-        this.API_BASE_URL = API_BASE_URL;
-    }
+    private static String API_BASE_URL = "http:127.0.0.1:8085";
 
     /**
      * 初始化WebDriver
@@ -55,9 +52,8 @@ public class SeleniumQuestionnaire {
     public boolean testLogin(WebDriver driver){
         // 与将要爬取的网站建立连接
         driver.get(API_BASE_URL + "/pages/login/index.html");
-        // 等待页面加载完成，最长等待时间为 5 秒
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("username")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.className("login-div")));
         // 在username输入框中输入测试用户名
         driver.findElement(By.id("username")).sendKeys("Selenium");
         // 在password输入框中输入测试密码
@@ -74,7 +70,7 @@ public class SeleniumQuestionnaire {
      */
     public boolean testCreateQuestionnaireStepA(WebDriver driver){
         // 跳转到项目展示首页
-        driver.get(API_BASE_URL + "/pages/questionnaire/index.html");
+//        driver.get(API_BASE_URL + "/pages/questionnaire/index.html");
         // 等待页面加载完成，最长等待时间为 5 秒
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.className("list-header")));
@@ -159,7 +155,7 @@ public class SeleniumQuestionnaire {
         driver.findElement(By.cssSelector("#question1 > div.bottom > div:nth-child(3) > button")).click();
         driver.findElement(By.cssSelector("#question1 > div.bottom > div:nth-child(3) > button")).click();
         driver.findElement(By.cssSelector("#question1 > div.bottom > div:nth-child(3) > button")).click();
-        driver.findElement(By.cssSelector("#question1 > div.bottom > div:nth-child(3) > button")).click();
+//        driver.findElement(By.cssSelector("#question1 > div.bottom > div:nth-child(3) > button")).click();
         // 填写选项0
         driver.findElement(By.cssSelector("#question1 > div.bottom > div.option > #optionItem0 > #chooseTerm")).sendKeys("C/C++");
         // 填写选项1
@@ -171,7 +167,7 @@ public class SeleniumQuestionnaire {
         // 填写选项4
         driver.findElement(By.cssSelector("#question1 > div.bottom > div.option > #optionItem4 > #chooseTerm")).sendKeys("Rust");
         // 填写选项5
-        driver.findElement(By.cssSelector("#question1 > div.bottom > div.option > #optionItem5 > #chooseTerm")).sendKeys("其他");
+//        driver.findElement(By.cssSelector("#question1 > div.bottom > div.option > #optionItem5 > #chooseTerm")).sendKeys("其他");
         // 点击"完成编辑"，保存该多选问题
         driver.findElement(By.cssSelector("#question1 > div.bottom > div.btn-group > #editFinish")).click();
 
@@ -247,6 +243,191 @@ public class SeleniumQuestionnaire {
         System.out.println(new Date() + "  警告框内容：" + alertText);
         // 点击警告框的“确定”按钮
         alert.accept();
+        return true;
+    }
+
+    public int[][] testAnswer(WebDriver driver,String url,int[][]times){
+        driver.get(url);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#question5")));
+
+        Random randomOption = new Random();
+        int r;
+        r = randomOption.nextInt(3)+1;
+        driver.findElement((By.cssSelector(("#question1 > div.bottom > div:nth-child({r}) > label > input[type=radio]").replace("{r}",String.valueOf(r))))).click();
+        times[0][r-1]++;
+
+        int count  = randomOption.nextInt(5)+1;
+        Set <Integer>set = new HashSet<>(count);
+        while(set.size()<count){
+            set.add(randomOption.nextInt(5)+1);
+        }
+        for (Integer integer : set) {
+            driver.findElement((By.cssSelector(("#question2 > div.bottom > div:nth-child({r}) > label > input[type=checkbox]").replace("{r}",String.valueOf(integer))))).click();
+            times[1][integer-1]++;
+        }
+        driver.findElement((By.cssSelector("#question3 > div.bottom > textarea"))).sendKeys("我宁愿什么都不做，也不会犯错！");
+
+        r = randomOption.nextInt(2)+2;
+        driver.findElement((By.cssSelector(("#question4 > div.bottom > table > tbody > tr:nth-child(1) > td:nth-child({r}) > input[type=radio]").replace("{r}",String.valueOf(r))))).click();
+        times[2][r-2]++;
+        r = randomOption.nextInt(2)+2;
+        driver.findElement((By.cssSelector(("#question4 > div.bottom > table > tbody > tr:nth-child(2) > td:nth-child({r}) > input[type=radio]").replace("{r}",String.valueOf(r))))).click();
+        times[2][r-2+2]++;
+        r = randomOption.nextInt(2)+2;
+        driver.findElement((By.cssSelector(("#question4 > div.bottom > table > tbody > tr:nth-child(3) > td:nth-child({r}) > input[type=radio]").replace("{r}",String.valueOf(r))))).click();
+        times[2][r-2+4]++;
+        r = randomOption.nextInt(2)+2;
+        driver.findElement((By.cssSelector(("#question4 > div.bottom > table > tbody > tr:nth-child(4) > td:nth-child({r}) > input[type=radio]").replace("{r}",String.valueOf(r))))).click();
+        times[2][r-2+6]++;
+        r = randomOption.nextInt(2)+2;
+        driver.findElement((By.cssSelector(("#question4 > div.bottom > table > tbody > tr:nth-child(5) > td:nth-child({r}) > input[type=radio]").replace("{r}",String.valueOf(r))))).click();
+        times[2][r-2+8]++;
+        r = randomOption.nextInt(2)+2;
+        driver.findElement((By.cssSelector(("#question4 > div.bottom > table > tbody > tr:nth-child(6) > td:nth-child({r}) > input[type=radio]").replace("{r}",String.valueOf(r))))).click();
+        times[2][r-2+10]++;
+        r = randomOption.nextInt(2)+2;
+        driver.findElement((By.cssSelector(("#question4 > div.bottom > table > tbody > tr:nth-child(7) > td:nth-child({r}) > input[type=radio]").replace("{r}",String.valueOf(r))))).click();
+        times[2][r-2+12]++;
+        r = randomOption.nextInt(5)+2;
+        driver.findElement((By.cssSelector(("#question5 > div.bottom > div:nth-child({r}) > label > input[type=radio]").replace("{r}",String.valueOf(r))))).click();
+        times[3][r-2]++;
+        driver.findElement((By.cssSelector("#btn-primary-submit"))).click();
+
+        Date date = new Date();
+        // 等待，确保警告框出现
+        wait.until(ExpectedConditions.alertIsPresent());
+        // 获取警告框对象
+        Alert alert = driver.switchTo().alert();
+        // 获取警告框的文本内容
+        String alertText = alert.getText();
+        System.out.println(date + "  警告框内容：" + alertText);
+        // 点击警告框的“确定”按钮
+        alert.accept();
+
+        return times;
+    }
+
+    public boolean testPublish(WebDriver driver){
+        driver.get(API_BASE_URL + "/pages/questionnaire/index.html");
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.className("list-header")));
+
+        driver.findElement((By.cssSelector("#content > div > div.list-header > div:nth-child(2) > button:nth-child(2)"))).click();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#content > tr:nth-child(1) > td:nth-child(4)")));
+        driver.findElement((By.cssSelector("#content > tr > td:nth-child(4) > button:nth-child(1)"))).click();
+
+        Date date = new Date();
+        // 等待，确保警告框出现
+        wait.until(ExpectedConditions.alertIsPresent());
+        // 获取警告框对象
+        Alert alert = driver.switchTo().alert();
+        // 获取警告框的文本内容
+        String alertText = alert.getText();
+        System.out.println(date + "  警告框内容：" + alertText);
+        // 点击警告框的“确定”按钮
+        alert.accept();
+        return true;
+    }
+
+    public String testLink(WebDriver driver){
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#content > tr:nth-child(1) > td:nth-child(4)")));
+
+        driver.findElement((By.cssSelector("#content > tr > td:nth-child(4) > button:nth-child(3)"))).click();
+
+        String url  = driver.findElement((By.cssSelector("body > div.popup > div.popup-text"))).getText();
+        driver.findElement(By.xpath("/html/body/div[3]/div[2]/button[2]")).click();
+        System.out.println(url);
+        return url;
+    }
+
+    public int[][] testCount(WebDriver driver)  {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#content > tr:nth-child(1)")));
+        driver.findElement(By.cssSelector("#content > tr:nth-child(1) > td:nth-child(4) > button:nth-child(4)")).click();
+        int[][] times = new int[6][15];
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#problem > div:nth-child(1) > div.options > div:nth-child(1)")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#problem > div:nth-child(5) > div.options > div:nth-child(1)")));
+        int total_times;
+        times[0][0] = driver.findElement(By.xpath("//*[@id=\"problem\"]/div[1]/div[2]/div[1]/div[5]")).getText().charAt(0)-48;
+        times[0][1] = driver.findElement(By.xpath("//*[@id=\"problem\"]/div[1]/div[2]/div[2]/div[5]")).getText().charAt(0)-48;
+        times[0][2] = driver.findElement(By.xpath("//*[@id=\"problem\"]/div[1]/div[2]/div[3]/div[5]")).getText().charAt(0)-48;
+        total_times = times[0][0]+times[0][1]+times[0][2];
+        times[1][0] = driver.findElement(By.xpath("//*[@id=\"problem\"]/div[2]/div[2]/div[1]/div[5]")).getText().charAt(0)-48;
+        times[1][1] = driver.findElement(By.xpath("//*[@id=\"problem\"]/div[2]/div[2]/div[2]/div[5]")).getText().charAt(0)-48;
+        times[1][2] = driver.findElement(By.xpath("//*[@id=\"problem\"]/div[2]/div[2]/div[3]/div[5]")).getText().charAt(0)-48;
+        times[1][3] = driver.findElement(By.xpath("//*[@id=\"problem\"]/div[2]/div[2]/div[4]/div[5]")).getText().charAt(0)-48;
+        times[1][4] = driver.findElement(By.xpath("//*[@id=\"problem\"]/div[2]/div[2]/div[5]/div[5]")).getText().charAt(0)-48;
+        String s = driver.findElement(By.xpath("//*[@id=\"question4\"]/div[2]/table/tbody/tr[1]/td[2]")).getText();
+        s = s.substring(0,s.length()-1);
+        int c = (int) Math.ceil(Double.parseDouble(s)/100*total_times);
+        times[2][0] = c;
+        times[2][1] = total_times-c;
+        s = driver.findElement(By.xpath("//*[@id=\"question4\"]/div[2]/table/tbody/tr[2]/td[2]")).getText();
+        s = s.substring(0,s.length()-1);
+        c = (int) Math.ceil(Double.parseDouble(s)/100*total_times);
+        times[2][2] = c;
+        times[2][3] = total_times-c;
+        s = driver.findElement(By.xpath("//*[@id=\"question4\"]/div[2]/table/tbody/tr[3]/td[2]")).getText();
+        s = s.substring(0,s.length()-1);
+        c = (int) Math.ceil(Double.parseDouble(s)/100*total_times);
+        times[2][4] = c;
+        times[2][5] = total_times-c;
+        s = driver.findElement(By.xpath("//*[@id=\"question4\"]/div[2]/table/tbody/tr[4]/td[2]")).getText();
+        s = s.substring(0,s.length()-1);
+        c = (int) Math.ceil(Double.parseDouble(s)/100*total_times);
+        times[2][6] = c;
+        times[2][7] = total_times-c;
+        s = driver.findElement(By.xpath("//*[@id=\"question4\"]/div[2]/table/tbody/tr[5]/td[2]")).getText();
+        s = s.substring(0,s.length()-1);
+        c = (int) Math.ceil(Double.parseDouble(s)/100*total_times);
+        times[2][8] = c;
+        times[2][9] = total_times-c;
+        s = driver.findElement(By.xpath("//*[@id=\"question4\"]/div[2]/table/tbody/tr[6]/td[2]")).getText();
+        s = s.substring(0,s.length()-1);
+        c = (int) Math.ceil(Double.parseDouble(s)/100*total_times);
+        times[2][10] = c;
+        times[2][11] = total_times-c;
+        s = driver.findElement(By.xpath("//*[@id=\"question4\"]/div[2]/table/tbody/tr[7]/td[2]")).getText();
+        s = s.substring(0,s.length()-1);
+        c = (int) Math.ceil(Double.parseDouble(s)/100*total_times);
+        times[2][12] = c;
+        times[2][13] = total_times-c;
+        times[3][0] = driver.findElement(By.xpath("//*[@id=\"problem\"]/div[5]/div[2]/div[1]/div[5]")).getText().charAt(0)-48;
+        times[3][1] = driver.findElement(By.xpath("//*[@id=\"problem\"]/div[5]/div[2]/div[2]/div[5]")).getText().charAt(0)-48;
+        times[3][2] = driver.findElement(By.xpath("//*[@id=\"problem\"]/div[5]/div[2]/div[3]/div[5]")).getText().charAt(0)-48;
+        times[3][3] = driver.findElement(By.xpath("//*[@id=\"problem\"]/div[5]/div[2]/div[4]/div[5]")).getText().charAt(0)-48;
+        times[3][4] = driver.findElement(By.xpath("//*[@id=\"problem\"]/div[5]/div[2]/div[5]/div[5]")).getText().charAt(0)-48;
+        ChromeDriver chromeDriver = (ChromeDriver) driver;
+        chromeDriver.executeScript("window.scrollTo(0, document.body.scrollHeight)");
+        driver.findElement(By.cssSelector("#btn-primary-submit")).click();
+        return times;
+    }
+
+    public boolean testData(WebDriver driver,String url,int ansCount){
+        int [][]times_first =new int[6][15];
+        int [][]times_second;
+        //回答前进行一次统计数据获取
+        if(ansCount!=0) times_first = testCount(driver);
+        times_first = testAnswer(driver,url,times_first);
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#content > div > div.list-header > div:nth-child(2) > button:nth-child(2)")));
+        driver.findElement(By.xpath("//*[@id=\"content\"]/div/div[1]/div[2]/button[2]")).click();
+
+        //回答后进行一次统计数据获取
+        times_second = testCount(driver);
+        //比较逻辑
+        for(int i=0;i<6;i++){
+            for(int j=0;j<15;j++){
+                if(times_second[i][j]!=times_first[i][j]){
+                    System.out.println(i+" "+j);
+                    return false;
+                }
+            }
+        }
+        System.out.println("警告窗内容:"+"填写问卷统计结果正确");
         return true;
     }
 }

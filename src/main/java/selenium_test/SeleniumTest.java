@@ -16,7 +16,7 @@ public class SeleniumTest {
         ChromeOptions option = new ChromeOptions();
         option.addArguments("--remote-allow-origins=*");
         // 初始化配置Chrome浏览器的WebDriver
-        System.setProperty("webdriver.chrome.driver","/Users/baizihan/Documents/学习空间/Java/selenium_test/src/main/resources/chromedriver");
+        System.setProperty("webdriver.chrome.driver","C:\\Users\\26501\\Desktop\\selenium_in_Springboot_for_training514-main\\src\\main\\resources\\chromedriver");
         // 创建驱动
         WebDriver driver = new ChromeDriver(option);
         // 最大化浏览器
